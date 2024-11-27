@@ -2,8 +2,7 @@
 import Container from '../../Components/Container.vue';
 import Title from '../../Components/Title.vue';
 import InputField from '../../Components/InputField.vue';
-import Checkbox from '../../Components/Checkbox.vue';
-import TextLink from '../../Components/TextLink.vue';
+
 import Button from '../../Components/Button.vue';
 import { route } from '../../../../vendor/tightenco/ziggy/src/js';
 import { useToast } from 'vue-toast-notification';
@@ -12,21 +11,23 @@ import { useForm } from '@inertiajs/vue3';
 
 const $toast = useToast();
 
+defineProps({
+    status: String,
+});
+
 
 const form = useForm({
     email: '',
-    password: '',
-    remember: null,
 });
 
 const submit = () => {
-    form.post(route('authenticate'), {
+    form.post(route('password.email'), {
         // onStart: () => {
         //     $toast.info('Logging in...');
         // },
         onSuccess: () => {
             $toast.open({
-                message: 'Login successful',
+                message: 'Password reset link sent',
                 type: 'success',
                 duration: 5000,
                 style: {
@@ -39,7 +40,7 @@ const submit = () => {
             form.errors = errors;
             form.reset('password')
             $toast.open({
-                message: 'Login failed',
+                message: 'Password reset link failed to send',
                 type: 'error',
                 duration: 5000,
                 style: {
@@ -53,10 +54,12 @@ const submit = () => {
 
 </script>
 <template>
-    <Head title=" - Login" />
+    <Head title=" - Forgot Password" />
     <Container class="w-1/3">
         <div class="mb-8">
-            <Title class="text-center mb-10">Login to your account</Title>
+        
+            <Title class="text-center mb-10">Forgot Password</Title>
+            <p class="text-center mb-5">Enter your email address to reset your password.</p>
         
             <form @submit.prevent="submit">
                 <InputField
@@ -66,25 +69,10 @@ const submit = () => {
                     v-model="form.email"
                     :error="form.errors.email"
                 />
-
-                <InputField
-                    label="Password"
-                    type="password"
-                    icon="key"
-                    v-model="form.password"
-                    :error="form.errors.password"
-                />
-                <div class="flex justify-between items-center mb-4">
-                    <Checkbox v-model="form.remember" name="remember">Remember me</Checkbox>
-                    <!-- <input type="checkbox" id="remember" v-model="form.remember" class="mr-2"> -->
-                    <!-- <TextLink routeName="password.request" label="Forgot password?" /> -->
-                    <TextLink routeName="password.request" label="Forgot password?" />
-                </div>
-                
-
-                <Button :disabled="form.processing">Login</Button>
-                <p class="mt-3">Don't have an account? <TextLink routeName="register" label="Register"/></p>
+                <Button :disabled="form.processing">Send Password Reset Link</Button>
             </form>
+
+            <p v-if="status" class="mt-3 text-green-500 text-center">{{ status }}</p>
         </div>
     </Container>
 </template>
